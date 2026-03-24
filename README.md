@@ -1,36 +1,173 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 AI Chat App (Next.js + n8n + Grok)
 
-## Getting Started
+A lightweight AI chat application inspired by ChatGPT / Perplexity that allows users to ask questions and receive intelligent responses powered by Grok via n8n workflows.
 
-First, run the development server:
+---
+
+## 🚀 Tech Stack
+
+### Frontend
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS
+
+### Backend / AI Layer
+- n8n (workflow automation)
+- Grok (LLM for generating responses)
+- Webhooks (communication between frontend and n8n)
+
+### Deployment
+- Vercel (frontend)
+- Docker (n8n)
+
+---
+
+## 🧩 Architecture Overview
+
+
+User Input (Next.js UI)
+↓
+POST /api/chat
+↓
+n8n Webhook (http://localhost:5678/webhook/chat
+)
+↓
+Grok LLM (via n8n)
+↓
+n8n processes response
+↓
+Return JSON response
+↓
+Next.js renders formatted output
+
+
+---
+
+## ✨ Features
+
+- 💬 Chat-style interface (Enter to send, Shift+Enter for newline)
+- 🎨 Light / Dark mode toggle
+- ⚡ Fast, responsive UI with Tailwind CSS
+- 🧠 AI-powered responses via Grok
+- 🔄 n8n workflow automation for AI orchestration
+- 📦 Clean formatting (**bold**, paragraphs, line breaks)
+- 📜 Auto-scroll to latest message
+
+---
+
+## 🛠️ Getting Started
+
+### 1. Clone the Repository
 
 ```bash
+git clone https://github.com/your-username/ai-chat-app.git
+cd ai-chat-app
+2. Install Dependencies
+npm install
+3. Run Next.js App
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App runs at:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+http://localhost:3000
+4. Set Up n8n (Docker)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Make sure Docker is installed, then run:
 
-## Learn More
+docker run -it --rm \
+  -p 5678:5678 \
+  -e N8N_BASIC_AUTH_ACTIVE=true \
+  -e N8N_BASIC_AUTH_USER=admin \
+  -e N8N_BASIC_AUTH_PASSWORD=password \
+  n8nio/n8n
 
-To learn more about Next.js, take a look at the following resources:
+n8n will be available at:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+http://localhost:5678
+5. Configure n8n Workflow
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create a workflow with:
 
-## Deploy on Vercel
+Webhook Node
+Method: POST
+Path: /chat
+Grok / AI Node
+Pass user input into the LLM
+Generate response
+Response Node
+Return JSON:
+{
+  "reply": "AI response here"
+}
+6. Connect Frontend to n8n
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Ensure your API route (/api/chat) sends requests to:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+http://localhost:5678/webhook/chat
+📡 API Example
+Request
+POST /api/chat
+{
+  "message": "Explain React useEffect simply"
+}
+Response
+{
+  "reply": "useEffect is a React hook that..."
+}
+📁 Project Structure
+/app
+  /components
+    Chat.tsx
+  /api
+    /chat
+      route.ts
+/public
+/styles
+🎨 UI Behavior
+Press Enter → Send message
+Press Shift + Enter → New line
+AI responses support:
+**bold** formatting
+paragraph spacing
+line breaks
+🚀 Deployment
+Frontend (Vercel)
+vercel
+Configure environment variables
+Update API endpoint to your deployed n8n instance
+n8n Deployment Options
+Docker (recommended)
+n8n Cloud
+VPS (AWS, DigitalOcean, etc.)
+
+Ensure webhook is publicly accessible:
+
+https://your-n8n-instance.com/webhook/chat
+🔐 Environment Variables
+
+Create a .env.local file:
+
+NEXT_PUBLIC_API_URL=http://localhost:5678/webhook/chat
+⚠️ Notes
+Configure CORS properly in n8n
+Do not expose unsecured n8n instances publicly
+Use authentication for production workflows
+Consider rate limiting for API routes
+📈 Future Improvements
+Streaming responses (real-time typing effect)
+Chat history persistence (database)
+Authentication (user sessions)
+Multi-model support (OpenAI, Anthropic, etc.)
+Prompt templates / system instructions
+Vector search (RAG)
+🤝 Contributing
+
+Pull requests are welcome. For major changes, please open an issue first.
+
+📄 License
+
+MIT
+
+💡 Overview
+
+This project demonstrates how to combine a modern frontend (Next.js) with workflow automation (n8n) and LLM capabilities (Grok) to build a simple but powerful AI-powered application.
